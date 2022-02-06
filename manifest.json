@@ -1,10 +1,10 @@
 {
     "name": "ExampleMod",
-    "version_number": "1.6.0",
+    "version_number": "2.0",
     "website_url": "https://github.com/ScottWilson0903/InscryptionExampleMod",
     "description": "This plugin is a BepInEx plugin made for Inscryption to provide various examples for the API by Cyantist.",
     "dependencies": [
         "BepInEx-BepInExPack_Inscryption-5.4.1701",
-        "API_dev-API-1.13.0"
+        "InscryptionAPI-API-1.13.0"
     ]
 }
