@@ -46,7 +46,6 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
-
         // This is your ability class. This defines what your ability does.
         public class NewTestAbility : AbilityBehaviour
         {
@@ -102,6 +101,49 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        // This is your special ability class. This defines what your special ability does.
+        public class NewTestSpecialAbility : SpecialCardBehaviour
+        {
+            public SpecialTriggeredAbility SpecialAbility => specialAbility;
+
+            public static SpecialTriggeredAbility specialAbility;
+
+            public readonly static SpecialTriggeredAbility TestSpecialAbility = SpecialTriggeredAbilityManager.Add(PluginGuid, "Test Special Ability", typeof(NewTestSpecialAbility)).Id;
+
+            // Let's say we want this special ability to trigger when drawn.
+            // First we need to override RespondsToDrawn, which tells the ability whether to trigger when drawn.
+            // You want to return true here, if you want the special ability to activate upon being drawn.
+            public override bool RespondsToDrawn()
+            {
+                return true;
+            }
+
+            // This is the actual meat and potatoes of the ability.
+            // Here is where we tell the ability what to do and when to do it.
+            public override IEnumerator OnDrawn()
+            {
+                // This checks whether you have room for items.
+                if (RunState.Run.consumables.Count < RunState.Run.MaxConsumables)
+                {
+                    RunState.Run.consumables.Add("SquirrelBottle");
+                    Singleton<ItemsManager>.Instance.UpdateItems(false);
+                }
+
+                // The check failed, so we'll do this instead.
+                else
+                {
+                    base.Card.Anim.StrongNegationEffect();
+                    yield return new WaitForSeconds(0.2f);
+                    Singleton<ItemsManager>.Instance.ShakeConsumableSlots(0f);
+                }
+
+                yield break;
+            }
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
+
         // This method passes the ability and the ability information to the API.
         private void AddNewTestAbility()
         {
@@ -118,7 +160,7 @@ namespace ExampleMod
             .SetDefaultPart1Ability()
 
             // This specifies the icon for the ability if it exists in Part 2.
-            .SetPixelAbilityIcon(TextureHelper.GetImageAsTexture("examplesigil.png"), FilterMode.Point)
+            .SetPixelAbilityIcon(TextureHelper.GetImageAsTexture("pixel_examplesigil.png"), FilterMode.Point)
             ;
             
             // Pass the ability to the API.
@@ -148,7 +190,7 @@ namespace ExampleMod
                 // Descryption.
                 description: "Kill this abomination, please."
             )
-            
+
             // This is the cost of the card. You can use bloodCost, bonesCost, and energyCost.
             .SetCost(bloodCost: 3)
 
@@ -156,6 +198,12 @@ namespace ExampleMod
             // The format for custom abilities is 'CustomAbilityClass.ability'.
             // The format for vanilla abilitites is Ability.Ability'.
             .AddAbilities(NewTestAbility.ability, Ability.DoubleStrike)
+
+            // These are the special abilities this card will have.
+            // These do not show up like other abilities; They are invisible to the player.
+            // The format for custom special abilities is 'CustomSpecialAbilityClass.CustomSpecialAbilityID'.
+            // The format for vanilla special abilities is SpecialTriggeredAbility.Ability'.
+            .AddSpecialAbilities(NewTestSpecialAbility.TestSpecialAbility, SpecialTriggeredAbility.CardsInHand)
 
             // CardAppearanceBehaviours are things like card backgrounds.
             // In this case, the card has a Rare background.
