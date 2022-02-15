@@ -23,10 +23,21 @@ namespace ExampleMod
     {
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        // Declare Harmony here for future Harmony patches. You'll use Harmony to patch the game's code outside of the scope of the API.
+        Harmony harmony = new Harmony(PluginGuid);
+
         // These are variables that exist everywhere in the entire class.
         private const string PluginGuid = "cyantist.inscryption.examplemod";
         private const string PluginName = "ExampleMod";
         private const string PluginVersion = "1.6.0.0";
+
+        // For some things, like challenge icons, we need to add the art now instead of later.
+        // We initialize the list here, in Awake() we'll add the sprites themselves.
+        public static List<Sprite> art_sprites;
+
+        // The first one is the actual challengeinfo, the second is the one we will check when applying the challenge effects.
+        private static AscensionChallengeInfo exampleChallenge_info;
+        private static AscensionChallengeInfo exampleChallenge;
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -35,16 +46,79 @@ namespace ExampleMod
         {
             Logger.LogInfo($"Loaded {PluginName}!");
 
-            // Add abilities before cards.
+            // Here we add the sprites to the list we created earlier.
+            art_sprites = new List<Sprite>();
+
+            Sprite example_sprite = TextureHelper.GetImageAsSprite("ascensionicon_example.png", TextureHelper.SpriteType.ChallengeIcon);
+            example_sprite.name = "ascensionicon_example";
+            art_sprites.Add(example_sprite);
+
+            Sprite example_activated_sprite = TextureHelper.GetImageAsSprite("ascensionicon_activated_example.png", TextureHelper.SpriteType.ChallengeIcon);
+            example_activated_sprite.name = "ascensionicon_activated_example";
+            art_sprites.Add(example_activated_sprite);
+
+            // Add abilities before cards. Otherwise, the game will try to load cards before the abilities are created.
 
             // The example ability method.
             AddNewTestAbility();
 
             // The example card method.
             AddBears();
+
+            // The example challenge method. The method creates the challengeinfo, the second line here passes the info to the API.
+            AddExampleChallenge();
+            exampleChallenge = ChallengeManager.Add(PluginGuid, exampleChallenge_info);
+
+            // Adding a starter deck is fairly simple.
+            // First we create the starterdeck info.
+            StarterDeckInfo exampleDeck = ScriptableObject.CreateInstance<StarterDeckInfo>();
+            exampleDeck.title = "ExampleDeck";
+            exampleDeck.iconSprite = TextureHelper.GetImageAsSprite("starterdeck_icon_example.png", TextureHelper.SpriteType.StarterDeckIcon);
+            exampleDeck.cards = new() { CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat") };
+
+            // Then we pass the starterdeck info to the API.
+            StarterDeckManager.Add(PluginGuid, exampleDeck);
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
+
+        // This is where you would actually apply meaningful changes when checking whether or not the example challenge is active.
+        // AbilityBehaviours are also an appropriate place, but what you can do this is less extensive.
+
+        [HarmonyPatch(typeof(Card), "ApplyAppearanceBehaviours")]
+        [HarmonyPostfix]
+        public static void ApplyChallenge(ref Card __instance)
+        {
+            if (AscensionSaveData.Data.ChallengeIsActive(exampleChallenge.challengeType))
+            {
+                // Do your Harmony stuff here. This example method patches the 'Card' class and the 'ApplyAppearanceBehaviours' method.
+                // It does nothing on its own though.
+                // For documentation of Harmony patching, see:
+                // https://harmony.pardeike.net/articles/patching.html
+            }
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+        // This is a method that adds a new challenge for Kaycee's Mod.
+
+        private void AddExampleChallenge()
+        {
+            exampleChallenge_info = ScriptableObject.CreateInstance<AscensionChallengeInfo>();
+            exampleChallenge_info.title = "Example Challenge";
+            exampleChallenge_info.description = "This is an example challenge. This does nothing.";
+
+            // It should be obvious, but this is the point value of the challenge.
+            exampleChallenge_info.pointValue = 0;
+
+            // This is where the list we initialized comes in handy. If you try to initialize sprites here, it will not work.
+            exampleChallenge_info.iconSprite = art_sprites.Find(texture => texture.name == "ascensionicon_example");
+            exampleChallenge_info.activatedSprite = art_sprites.Find(texture => texture.name == "ascensionicon_activated_example");
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
 
         // This is your ability class. This defines what your ability does.
         public class NewTestAbility : AbilityBehaviour
