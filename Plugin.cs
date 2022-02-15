@@ -27,9 +27,9 @@ namespace ExampleMod
         Harmony harmony = new Harmony(PluginGuid);
 
         // These are variables that exist everywhere in the entire class.
-        private const string PluginGuid = "cyantist.inscryption.examplemod";
+        private const string PluginGuid = "debugman18.inscryption.examplemod";
         private const string PluginName = "ExampleMod";
-        private const string PluginVersion = "1.6.0.0";
+        private const string PluginVersion = "2.0";
 
         // For some things, like challenge icons, we need to add the art now instead of later.
         // We initialize the list here, in Awake() we'll add the sprites themselves.
