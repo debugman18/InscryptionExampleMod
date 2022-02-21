@@ -6,7 +6,7 @@
     <Description>An example mod for Inscryption API</Description>
     <Version>1.6.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>

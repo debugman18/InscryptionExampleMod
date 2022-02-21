@@ -13,6 +13,7 @@ using InscryptionAPI.Saves;
 using InscryptionAPI.Card;
 using InscryptionAPI.Ascension;
 using InscryptionAPI.Helpers;
+using InscryptionAPI.Encounters;
 using System.Linq;
 
 namespace ExampleMod
@@ -71,16 +72,45 @@ namespace ExampleMod
 
             // Adding a starter deck is fairly simple.
             // First we create the starterdeck info.
+            // If you're adding more than one, a method can be created to organize them.
             StarterDeckInfo exampleDeck = ScriptableObject.CreateInstance<StarterDeckInfo>();
             exampleDeck.title = "ExampleDeck";
             exampleDeck.iconSprite = TextureHelper.GetImageAsSprite("starterdeck_icon_example.png", TextureHelper.SpriteType.StarterDeckIcon);
             exampleDeck.cards = new() { CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat") };
+
+            // In this function we will add any custom sequencers.
+            AddNodes();
 
             // Then we pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
+
+        // Here is where we can add our nodes.
+        private static void AddNodes()
+        {
+            // Here we add our ExampleSequence, with CustomNodeData ExampleNodeData.
+            NodeManager.Add<ExampleSequence, ExampleNodeData>(
+            // These textures are our node icon.
+            // A tip for this art:
+            // Over the four frames, mildly adjust the shape of the background object,
+            // while seperately mildly adjusting the shape of the foreground object.
+            // The desired animation is a mild shifting.
+            new Texture2D[] {
+                TextureHelper.GetImageAsTexture("example_node_1.png"),
+                TextureHelper.GetImageAsTexture("example_node_2.png"),
+                TextureHelper.GetImageAsTexture("example_node_3.png"),
+                TextureHelper.GetImageAsTexture("example_node_4.png")
+            },
+
+            // SpecialEventRandom will spawn in areas where nodes like Totem nodes would.
+            NodeManager.NodePosition.Act1Available
+            );
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
 
         // This is where you would actually apply meaningful changes when checking whether or not the example challenge is active.
         // AbilityBehaviours are also an appropriate place, but what you can do this is less extensive.
@@ -95,6 +125,7 @@ namespace ExampleMod
                 // It does nothing on its own though.
                 // For documentation of Harmony patching, see:
                 // https://harmony.pardeike.net/articles/patching.html
+                ChallengeActivationUI.Instance.ShowActivation(exampleChallenge.challengeType);
             }
         }
 
