@@ -118,6 +118,10 @@ public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
 	{
 		List<CardInfo> validCards = GetValidCards();
 
+		// Restrict the player from activating the slot while it's already in use. 
+		selectionSlot.SetEnabled(false);
+		selectionSlot.ShowState(HighlightedInteractable.State.NonInteractable, false, 0.15f);
+
 		if (validCards == null)
 		{
 			// There's certain things like WaitForSeconds that don't run in a void method,
@@ -137,6 +141,8 @@ public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
 
 		if (!validCards)
 		{
+			selectionSlot.SetEnabled(false);
+
 			// No valid cards in the deck, so cancel the sequencer early.
 			selectionSlot.FlyOffCard();
 			selectionSlot.Disable();
@@ -155,6 +161,8 @@ public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
 			yield break;
 		}
 
+		selectionSlot.SetEnabled(false);
+
 		// Use concatenation to pass cardinfo to speech.
 		yield return TextDisplayer.Instance.ShowUntilInput("That's a fine " + selectionSlot.Card.Info.displayedName + "...");
 
@@ -168,6 +176,7 @@ public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
 		selectionSlot.Card.Info.cost = modifiedCard.cost;
 		selectionSlot.Card.SetInfo(modifiedCard);
 		selectionSlot.Card.RenderCard();
+		yield return new WaitForSeconds(0.6f);
 		selectionSlot.Card.SetFaceDown(false);
 
 		// Remove the old card from the deck, and add the modified one.
