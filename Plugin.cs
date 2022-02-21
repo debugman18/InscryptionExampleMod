@@ -105,7 +105,7 @@ namespace ExampleMod
             },
 
             // SpecialEventRandom will spawn in areas where nodes like Totem nodes would.
-            NodeManager.NodePosition.Act1Available
+            NodeManager.NodePosition.SpecialEventRandom
             );
         }
 
