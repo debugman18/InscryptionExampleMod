@@ -31,6 +31,7 @@ namespace ExampleMod
         private const string PluginGuid = "debugman18.inscryption.examplemod";
         private const string PluginName = "ExampleMod";
         private const string PluginVersion = "2.0";
+        private const string PluginPrefix = "Example";
 
         // For some things, like challenge icons, we need to add the art now instead of later.
         // We initialize the list here, in Awake() we'll add the sprites themselves.
@@ -39,6 +40,9 @@ namespace ExampleMod
         // The first one is the actual challengeinfo, the second is the one we will check when applying the challenge effects.
         private static AscensionChallengeInfo exampleChallenge_info;
         private static AscensionChallengeInfo exampleChallenge;
+
+        // This is the ID of our example stat icon.
+        public static SpecialStatIcon ExampleStatIconID;
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -63,6 +67,9 @@ namespace ExampleMod
             // The example ability method.
             AddNewTestAbility();
 
+            // In this method we're adding custom stat icons.
+            AddSpecialStatIcons();
+
             // The example card method.
             AddBears();
 
@@ -78,11 +85,42 @@ namespace ExampleMod
             exampleDeck.iconSprite = TextureHelper.GetImageAsSprite("starterdeck_icon_example.png", TextureHelper.SpriteType.StarterDeckIcon);
             exampleDeck.cards = new() { CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat") };
 
-            // In this function we will add any custom sequencers.
+            // In this method we will add any custom sequencers.
             AddNodes();
 
             // Then we pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
+        // This is our stat behaviour.
+        public class ExampleStatBehaviour : VariableStatBehaviour
+        {
+            private static SpecialStatIcon exampleStatIconType;
+
+            public override SpecialStatIcon IconType => exampleStatIconType;
+
+            public override int[] GetStatValues()
+            {
+                int num = 1;
+
+                int[] array = new int[2];
+                array[1] = num;
+                return array;
+            }
+        }
+
+        // Here we add a custom specialstaticon.
+        public void AddSpecialStatIcons()
+        {
+            StatIconInfo exampleStatIconInfo = StatIconManager.New(PluginGuid, "ExampleStatIcon", "This is an example stat icon.", typeof(ExampleStatBehaviour))
+                .SetIcon("ExampleMod/art/specialstaticons/example_stat_icon.png")
+                .SetDefaultPart1Ability();
+            exampleStatIconInfo.appliesToAttack = true;
+            exampleStatIconInfo.appliesToHealth = false;
+           
+            ExampleStatIconID = StatIconManager.Add(PluginGuid, exampleStatIconInfo, typeof(ExampleStatBehaviour)).Id;
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -110,6 +148,7 @@ namespace ExampleMod
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
         // This is where you would actually apply meaningful changes when checking whether or not the example challenge is active.
@@ -244,6 +283,7 @@ namespace ExampleMod
 
                 yield break;
             }
+
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -256,7 +296,7 @@ namespace ExampleMod
             AbilityInfo newtestability = AbilityManager.New(
                 PluginGuid + ".newtestability",
                 "TestAbility",
-                "When a card bearing this sigil deals a killing blow, it gains 1 power and then a copy of it is created in your hand.",
+                "This is a test ability.",
                 typeof(NewTestAbility),
                 "examplesigil.png"
             )
@@ -293,7 +333,10 @@ namespace ExampleMod
                 48,
 
                 // Descryption.
-                description: "Kill this abomination, please."
+                description: "Kill this abomination, please.",
+
+                // Card ID Prefix
+                modPrefix: PluginPrefix
             )
 
             // This is the cost of the card. You can use bloodCost, bonesCost, and energyCost.
@@ -308,7 +351,7 @@ namespace ExampleMod
             // These do not show up like other abilities; They are invisible to the player.
             // The format for custom special abilities is 'CustomSpecialAbilityClass.CustomSpecialAbilityID'.
             // The format for vanilla special abilities is SpecialTriggeredAbility.Ability'.
-            .AddSpecialAbilities(NewTestSpecialAbility.TestSpecialAbility, SpecialTriggeredAbility.CardsInHand)
+            //.AddSpecialAbilities(NewTestSpecialAbility.TestSpecialAbility, SpecialTriggeredAbility.CardsInHand)
 
             // CardAppearanceBehaviours are things like card backgrounds.
             // In this case, the card has a Rare background.
@@ -323,6 +366,8 @@ namespace ExampleMod
             .SetPortrait("eightfuckingbears.png", "eightfuckingbears_emissive.png")
 
             ;
+
+            EightFuckingBears.specialStatIcon = ExampleStatIconID;
 
             // Pass the card to the API.
             CardManager.Add(EightFuckingBears);
