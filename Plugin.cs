@@ -109,6 +109,7 @@ namespace ExampleMod
                 array[1] = num;
                 return array;
             }
+
         }
 
         // Here we add a custom specialstaticon.
