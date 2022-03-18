@@ -321,6 +321,10 @@ namespace ExampleMod
         {
             // This builds our card information.
             CardInfo EightFuckingBears = CardManager.New(
+
+                // Card ID Prefix
+                modPrefix: PluginPrefix,
+
                 // Card internal name.
                 "Eight_Bears",
 
@@ -334,10 +338,8 @@ namespace ExampleMod
                 48,
 
                 // Descryption.
-                description: "Kill this abomination, please.",
+                description: "Kill this abomination, please."
 
-                // Card ID Prefix
-                modPrefix: PluginPrefix
             )
 
             // This is the cost of the card. You can use bloodCost, bonesCost, and energyCost.
@@ -371,7 +373,7 @@ namespace ExampleMod
             EightFuckingBears.specialStatIcon = ExampleStatIconID;
 
             // Pass the card to the API.
-            CardManager.Add(EightFuckingBears);
+            CardManager.Add(PluginPrefix, EightFuckingBears);
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
