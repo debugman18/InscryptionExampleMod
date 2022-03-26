@@ -3,6 +3,7 @@ using System;
 using System.Reflection;
 using HarmonyLib;
 using BepInEx;
+using BepInEx.Bootstrap;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -366,7 +367,8 @@ namespace ExampleMod
 
             // The first image is the card portrait.
             // The second image is the emissive portrait.
-            .SetPortrait("eightfuckingbears.png", "eightfuckingbears_emissive.png")
+            .SetPortrait("eightfuckingbears.png")
+            .SetEmissivePortrait("eightfuckingbears_emissive.png")
 
             ;
 
