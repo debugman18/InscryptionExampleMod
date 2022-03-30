@@ -23,14 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="Assembly-CSharp">
-      <HintPath>lib\Assembly-CSharp.dll</HintPath>
-    </Reference>
     <Reference Include="Sirenix.Serialization">
       <HintPath>lib\Sirenix.Serialization.dll</HintPath>
     </Reference>
-	<Reference Include="InscryptionAPI">
-		<HintPath>lib\InscryptionAPI.dll</HintPath>
-	</Reference>
   </ItemGroup>
 </Project>
