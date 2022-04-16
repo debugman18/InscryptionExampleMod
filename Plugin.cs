@@ -15,6 +15,7 @@ using InscryptionAPI.Card;
 using InscryptionAPI.Ascension;
 using InscryptionAPI.Helpers;
 using InscryptionAPI.Encounters;
+using InscryptionAPI.Regions;
 using System.Linq;
 
 namespace ExampleMod
@@ -44,6 +45,9 @@ namespace ExampleMod
 
         // This is the ID of our example stat icon.
         public static SpecialStatIcon ExampleStatIconID;
+
+        // We will use this as a random seed.
+        public static int randomSeed = SaveManager.SaveFile.GetCurrentRandomSeed();
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -86,8 +90,11 @@ namespace ExampleMod
             exampleDeck.iconSprite = TextureHelper.GetImageAsSprite("starterdeck_icon_example.png", TextureHelper.SpriteType.StarterDeckIcon);
             exampleDeck.cards = new() { CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat"), CardLoader.GetCardByName("Cat") };
 
-            // In this method we will add any custom sequencers.
+            // In this method we will add any custom node sequencers.
             AddNodes();
+
+            // This adds our custom battle, known as an "encounter".
+            AddExampleEncounter();
 
             // Then we pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
@@ -102,6 +109,7 @@ namespace ExampleMod
 
             public override SpecialStatIcon IconType => exampleStatIconType;
 
+            // The array we're returning here is for the card health/power values. 
             public override int[] GetStatValues()
             {
                 int num = 1;
@@ -151,10 +159,62 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        // This method creates a CardBlueprint to be used in the encounter.
+        public static EncounterBlueprintData.CardBlueprint bp_Raven = new EncounterBlueprintData.CardBlueprint
+        {
+            card = CardLoader.GetCardByName("Raven") 
+        };
+
+        public static EncounterBlueprintData.CardBlueprint bp_Squirrel = new EncounterBlueprintData.CardBlueprint
+        {
+            card = CardLoader.GetCardByName("Raven")
+        };
+
+        public static EncounterBlueprintData.CardBlueprint bp_Rare = new EncounterBlueprintData.CardBlueprint
+        {
+            // Use the random seed, while adjusting it by the turn number. Make sure to keep changing the seed.
+            card = CardLoader.GetRandomUnlockedRareCard(randomSeed + Singleton<TurnManager>.Instance.TurnNumber * 100)
+        };
+
+        // Here we declare and add our encounter.
+        private static void AddExampleEncounter()
+        {
+
+            // Create the Encounter blueprint data.
+            var example_blueprint = ScriptableObject.CreateInstance<EncounterBlueprintData>();
+            example_blueprint.name = "ExampleBattle";
+            example_blueprint.turns = new List<List<EncounterBlueprintData.CardBlueprint>>
+            {
+                // On the first turn, play 1 Squirrel.
+                // Where these cards are played played is determined by the AI.
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Squirrel},
+
+                // On the second turn, play nothing.
+                new List<EncounterBlueprintData.CardBlueprint> (),
+
+                // On the third, and subsequent turns, play 1 Raven, increasing by 1 each turn.
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven},
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven},
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven},
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven, bp_Raven},
+
+                // If the player survives the Ravens, play 1 rare, then the next turn play 2 rares.
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Rare},
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Rare, bp_Rare},
+            };
+
+            // RegionIndex is the parameter of regions[]. 0 is Woodlands, 1 is Wetlands, 2 is Snowline.
+            // Here we add our custom encounter to the Woodlands region.
+            RegionProgression.Instance.regions[0].encounters.Clear();
+            RegionProgression.Instance.regions[0].AddEncounters(example_blueprint);
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
         // This is where you would actually apply meaningful changes when checking whether or not the example challenge is active.
-        // AbilityBehaviours are also an appropriate place, but what you can do this is less extensive.
+        // AbilityBehaviours are also an appropriate place, but what you can do there is less extensive.
 
         [HarmonyPatch(typeof(Card), "ApplyAppearanceBehaviours")]
         [HarmonyPostfix]
@@ -355,7 +415,7 @@ namespace ExampleMod
             // These do not show up like other abilities; They are invisible to the player.
             // The format for custom special abilities is 'CustomSpecialAbilityClass.CustomSpecialAbilityID'.
             // The format for vanilla special abilities is SpecialTriggeredAbility.Ability'.
-            //.AddSpecialAbilities(NewTestSpecialAbility.TestSpecialAbility, SpecialTriggeredAbility.CardsInHand)
+            .AddSpecialAbilities(NewTestSpecialAbility.TestSpecialAbility, SpecialTriggeredAbility.CardsInHand)
 
             // CardAppearanceBehaviours are things like card backgrounds.
             // In this case, the card has a Rare background.

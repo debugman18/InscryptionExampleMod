@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>ExampleMod</AssemblyName>
-    <Description>An example mod for Inscryption API</Description>
-    <Version>1.6.0</Version>
+    <Description>An example mod for the Inscryption API</Description>
+    <Version>2.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
