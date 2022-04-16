@@ -170,12 +170,6 @@ namespace ExampleMod
             card = CardLoader.GetCardByName("Squirrel")
         };
 
-        public static EncounterBlueprintData.CardBlueprint bp_Rare = new EncounterBlueprintData.CardBlueprint
-        {
-            // Use the random seed, while adjusting it by the turn number. Make sure to keep changing the seed.
-            card = CardLoader.GetRandomUnlockedRareCard(randomSeed + Singleton<TurnManager>.Instance.TurnNumber * 100)
-        };
-
         // Here we declare and add our encounter.
         private static void AddExampleEncounter()
         {
@@ -196,11 +190,7 @@ namespace ExampleMod
                 new List<EncounterBlueprintData.CardBlueprint> {bp_Raven},
                 new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven},
                 new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven},
-                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven, bp_Raven},
-
-                // If the player survives the Ravens, play 1 rare, then the next turn play 2 rares.
-                new List<EncounterBlueprintData.CardBlueprint> {bp_Rare},
-                new List<EncounterBlueprintData.CardBlueprint> {bp_Rare, bp_Rare},
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven, bp_Raven}
             };
 
             // RegionIndex is the parameter of regions[]. 0 is Woodlands, 1 is Wetlands, 2 is Snowline.
