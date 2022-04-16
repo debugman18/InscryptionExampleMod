@@ -169,7 +169,7 @@ namespace ExampleMod
             minDifficulty = 0,
 
             // This is the highest difficulty this encounter will appear for.
-            maxDifficulty = 0
+            maxDifficulty = 20
         };
 
         // Blueprints can be chance based, as well.
