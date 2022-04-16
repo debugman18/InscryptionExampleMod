@@ -16,6 +16,7 @@ using InscryptionAPI.Ascension;
 using InscryptionAPI.Helpers;
 using InscryptionAPI.Encounters;
 using InscryptionAPI.Regions;
+using InscryptionAPI.Boons;
 using System.Linq;
 
 namespace ExampleMod
@@ -95,6 +96,9 @@ namespace ExampleMod
 
             // This adds our custom battle, known as an "encounter".
             AddExampleEncounter();
+
+            // Example boon is added here.
+            AddExampleBoon();
 
             // Then we pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
@@ -233,6 +237,43 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        // This is where we build the behaviour of the boon.
+        public class ExampleBoonBehaviour : BoonBehaviour
+        {
+            BoonManager.FullBoon ExampleBoon = new BoonManager.FullBoon();
+
+            public override bool RespondToSacrifice()
+            {
+                return true;
+            }
+
+            public override IEnumerator OnSacrifice()
+            {
+                RunState.Run.currency++;
+                yield break;
+            }
+        }
+
+        // Here is where an example boon is added.
+        private static void AddExampleBoon()
+        {
+            // Build the boon as BoonData.
+            BoonData.Type example_boon = BoonManager.New<ExampleBoonBehaviour>(
+                Plugin.PluginGuid, 
+                "Example Boon",
+                "This example boon gives one tooth whenever a card is sacrificed.",
+                TextureHelper.GetImageAsTexture("boonicon_example.png"),
+                TextureHelper.GetImageAsTexture("boon_example.png"),
+                true,
+                true,
+                true
+            );
+
+            // Pass the BoonData to the API.
+            BoonManager.AddBoon(example_boon);
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
 
 
         // This is where you would actually apply meaningful changes when checking whether or not the example challenge is active.
