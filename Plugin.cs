@@ -167,7 +167,7 @@ namespace ExampleMod
 
         public static EncounterBlueprintData.CardBlueprint bp_Squirrel = new EncounterBlueprintData.CardBlueprint
         {
-            card = CardLoader.GetCardByName("Raven")
+            card = CardLoader.GetCardByName("Squirrel")
         };
 
         public static EncounterBlueprintData.CardBlueprint bp_Rare = new EncounterBlueprintData.CardBlueprint
