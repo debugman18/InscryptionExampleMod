@@ -159,16 +159,42 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
-        // This method creates a CardBlueprint to be used in the encounter.
+        // This creates a CardBlueprint to be used in the encounter.
         public static EncounterBlueprintData.CardBlueprint bp_Raven = new EncounterBlueprintData.CardBlueprint
         {
-            card = CardLoader.GetCardByName("Raven") 
+            // This is the card that will be played.
+            card = CardLoader.GetCardByName("Raven"),
+
+            // This is the lowest difficulty this encounter will appear for.
+            minDifficulty = 0,
+
+            // This is the highest difficulty this encounter will appear for.
+            maxDifficulty = 0
         };
 
-        public static EncounterBlueprintData.CardBlueprint bp_Squirrel = new EncounterBlueprintData.CardBlueprint
+        // Blueprints can be chance based, as well.
+        public static EncounterBlueprintData.CardBlueprint bp_SquirrelAltRaven = new EncounterBlueprintData.CardBlueprint
         {
-            card = CardLoader.GetCardByName("Squirrel")
+            card = CardLoader.GetCardByName("Squirrel"),
+
+            // We can specify an alternative card.
+            replacement = CardLoader.GetCardByName("Raven"),
+
+            // The odds are out of 100, so 50 is 50%.
+            randomReplaceChance = 50
         };
+
+        // You can also use a method with parameters.
+        // You can also use parameters like replacement and randomReplaceChance the same way.
+        public static EncounterBlueprintData.CardBlueprint bp_Create(string name, int minDifficulty, int maxDifficulty)
+        {
+            return new()
+            {
+                card = CardLoader.GetCardByName(name),
+                minDifficulty = minDifficulty,
+                maxDifficulty = maxDifficulty,
+            };
+        }
 
         // Here we declare and add our encounter.
         private static void AddExampleEncounter()
@@ -180,8 +206,8 @@ namespace ExampleMod
             example_blueprint.turns = new List<List<EncounterBlueprintData.CardBlueprint>>
             {
                 // On the first turn, play 1 Squirrel.
-                // Where these cards are played played is determined by the AI.
-                new List<EncounterBlueprintData.CardBlueprint> {bp_Squirrel},
+                // Where these cards are played is determined by the AI.
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Create("Squirrel", 0, 20)},
 
                 // On the second turn, play nothing.
                 new List<EncounterBlueprintData.CardBlueprint> (),
@@ -190,14 +216,18 @@ namespace ExampleMod
                 new List<EncounterBlueprintData.CardBlueprint> {bp_Raven},
                 new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven},
                 new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven},
-                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven, bp_Raven}
+                new List<EncounterBlueprintData.CardBlueprint> {bp_Raven, bp_Raven, bp_Raven, bp_Raven},
+
+                // On the last turn, play either a Squirrel or a Raven.
+                new List<EncounterBlueprintData.CardBlueprint> {bp_SquirrelAltRaven},
             };
 
             // RegionIndex is the parameter of regions[]. 0 is Woodlands, 1 is Wetlands, 2 is Snowline.
-            // Here we add our custom encounter to the Woodlands region.
 
             // It's helpful to clear existing encounters to test yours.
             // RegionProgression.Instance.regions[0].encounters.Clear();
+
+            // Here we add our custom encounter to the Woodlands region.
             RegionProgression.Instance.regions[0].AddEncounters(example_blueprint);
         }
 
