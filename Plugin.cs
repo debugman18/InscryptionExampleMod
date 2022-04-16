@@ -205,7 +205,9 @@ namespace ExampleMod
 
             // RegionIndex is the parameter of regions[]. 0 is Woodlands, 1 is Wetlands, 2 is Snowline.
             // Here we add our custom encounter to the Woodlands region.
-            RegionProgression.Instance.regions[0].encounters.Clear();
+
+            // It's helpful to clear existing encounters to test yours.
+            // RegionProgression.Instance.regions[0].encounters.Clear();
             RegionProgression.Instance.regions[0].AddEncounters(example_blueprint);
         }
 
