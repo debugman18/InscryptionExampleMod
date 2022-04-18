@@ -275,6 +275,37 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        // Create an appearance behaviour. This can modify the card background, decals, etc.
+        public class ExampleAppearanceBehaviour : CardAppearanceBehaviour
+        {
+            public override void ApplyAppearance()
+            {
+                // The lines commented out below are included as an example of changing the card background.
+                // Since we will alredy be applying the Rare appearance to the example card, this part of the 
+                // card appearance is commented out in order to display it. So, we'll be exclusively adding decals.
+
+                // Texture2D ExampleBG = TextureHelper.GetImageAsTexture("card_exampleappearance.png");
+                // ExampleBG.filterMode = FilterMode.Point;
+                // base.Card.RenderInfo.baseTextureOverride = ExampleBG;
+
+                // This is the decals part of a CardAppearanceBehaviour.
+                Texture2D ExampleDecal = TextureHelper.GetImageAsTexture("decal_example.png");
+                base.Card.Info.TempDecals.Clear();
+                base.Card.Info.TempDecals.Add(ExampleDecal);
+            }
+
+            // When this card is chosen via a sequencer, run the following method. This example does nothing, but think *Ijaraq*.
+            public void OnCardAddedToDeck()
+            {
+
+            }
+
+        }
+
+        // Pass the appearance behaviour to the API by its Id.
+        public readonly static CardAppearanceBehaviour.Appearance ExampleAppearance = CardAppearanceBehaviourManager.Add(PluginGuid, "ExampleAppearance", typeof(ExampleAppearanceBehaviour)).Id;
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
 
         // This is where you would actually apply meaningful changes when checking whether or not the example challenge is active.
         // AbilityBehaviours are also an appropriate place, but what you can do there is less extensive.
@@ -482,7 +513,8 @@ namespace ExampleMod
 
             // CardAppearanceBehaviours are things like card backgrounds.
             // In this case, the card has a Rare background.
-            .AddAppearances(CardAppearanceBehaviour.Appearance.RareCardBackground)
+            // We also add an example appearance, which in this case only adds decals.
+            .AddAppearances(CardAppearanceBehaviour.Appearance.RareCardBackground, ExampleAppearance)
 
             // MetaCategories tell the game where this card should be available as a rewward or for other purposes.
             // In this case, CardMetaCategory.Rare tells the game to put this card in the post-boss reward event.
