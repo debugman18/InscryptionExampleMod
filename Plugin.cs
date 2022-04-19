@@ -295,7 +295,7 @@ namespace ExampleMod
             }
 
             // When this card is chosen via a sequencer, run the following method. This example does nothing, but think *Ijaraq*.
-            public void OnCardAddedToDeck()
+            public override void OnCardAddedToDeck()
             {
 
             }
