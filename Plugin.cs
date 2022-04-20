@@ -48,7 +48,7 @@ namespace ExampleMod
         public static SpecialStatIcon ExampleStatIconID;
 
         // We will use this as a random seed.
-        public static int randomSeed = SaveManager.SaveFile.GetCurrentRandomSeed();
+        public static int randomSeed;
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
