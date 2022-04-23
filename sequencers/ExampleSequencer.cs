@@ -223,6 +223,7 @@ public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
 			Debug.Log("SlotSelectionEnded");
 			selectionSlot.SetShown(true, false);
 			selectionSlot.ShowState(HighlightedInteractable.State.Interactable, false, 0.15f);
+			Singleton<ViewManager>.Instance.SwitchToView(View.StatBoostSlot, false, true);
 			StartCoroutine(ApplyCardCostSequence(true));
 		}
 

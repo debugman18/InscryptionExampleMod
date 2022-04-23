@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>ExampleMod</AssemblyName>
     <Description>An example mod for the Inscryption API</Description>
-    <Version>2.0</Version>
+    <Version>2.2.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>

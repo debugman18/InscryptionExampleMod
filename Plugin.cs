@@ -47,6 +47,9 @@ namespace ExampleMod
         // This is the ID of our example stat icon.
         public static SpecialStatIcon ExampleStatIconID;
 
+        // We use this to reference our example tribe.
+        public static Tribe exampleTribe;
+
         // We will use this as a random seed.
         public static int randomSeed;
 
@@ -76,6 +79,9 @@ namespace ExampleMod
             // In this method we're adding custom stat icons.
             AddSpecialStatIcons();
 
+            // Add custom tribe in this method.
+            AddExampleTribe();
+
             // The example card method.
             AddBears();
 
@@ -100,8 +106,12 @@ namespace ExampleMod
             // Example boon is added here.
             AddExampleBoon();
 
-            // Then we pass the starterdeck info to the API.
+            // Pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
+
+            // Set a custom tribe. This does not add a totem head.
+            Debug.Log(TextureHelper.GetImageAsTexture("tribeicon_example.png"));
+
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -275,6 +285,20 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+
+        private static void AddExampleTribe()
+        {
+            exampleTribe = TribeManager.Add(
+                PluginGuid,
+                "tribe_example",
+                tribeIcon: TextureHelper.GetImageAsTexture("tribeicon_example.png"),
+                appearInTribeChoices: true,
+                choiceCardbackTexture: TextureHelper.GetImageAsTexture("card_rewardback_example.png")
+            );
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
         // Create an appearance behaviour. This can modify the card background, decals, etc.
         public class ExampleAppearanceBehaviour : CardAppearanceBehaviour
         {
@@ -292,6 +316,9 @@ namespace ExampleMod
                 Texture2D ExampleDecal = TextureHelper.GetImageAsTexture("decal_example.png");
                 base.Card.Info.TempDecals.Clear();
                 base.Card.Info.TempDecals.Add(ExampleDecal);
+
+                // You can also force an emmission.
+                base.Card.RenderInfo.forceEmissivePortrait = true;
             }
 
             // When this card is chosen via a sequencer, run the following method. This example does nothing, but think *Ijaraq*.
@@ -524,10 +551,13 @@ namespace ExampleMod
             // The second image is the emissive portrait.
             .SetPortrait("eightfuckingbears.png")
             .SetEmissivePortrait("eightfuckingbears_emissive.png")
+            .SetStatIcon(ExampleStatIconID)
+
+            // The first tribe is a custom tribe, we set this earlier and now we pass it to the card.
+            // The second tribe example here is vanilla, in the format of Tribe.tribename.
+            .AddTribes(new Tribe[] { exampleTribe, Tribe.Canine })
 
             ;
-
-            EightFuckingBears.specialStatIcon = ExampleStatIconID;
 
             // Pass the card to the API.
             CardManager.Add(PluginPrefix, EightFuckingBears);
