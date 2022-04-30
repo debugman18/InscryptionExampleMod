@@ -86,8 +86,9 @@ namespace ExampleMod
             AddBears();
 
             // The example challenge method. The method creates the challengeinfo, the second line here passes the info to the API.
+            // The third and fourth parameters here are Unlock Level and Stackable. 
             AddExampleChallenge();
-            exampleChallenge = ChallengeManager.Add(PluginGuid, exampleChallenge_info);
+            exampleChallenge = ChallengeManager.Add(PluginGuid, exampleChallenge_info, 0, false);
 
             // Adding a starter deck is fairly simple.
             // First we create the starterdeck info.
