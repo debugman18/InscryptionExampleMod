@@ -507,9 +507,6 @@ namespace ExampleMod
                     // You can also use card.GetExtendedPropertyAsInt("example_cost") elsewhere.
                     int? example_cost = card.GetExtendedPropertyAsInt("example_cost");
 
-                    Debug.Log("CHECK COSTS");
-                    Debug.Log(card.GetExtendedPropertyAsInt("example_cost"));
-
                     if (example_cost > 0)
                     {
                         // Add this cost to the card's costs as a texture.
