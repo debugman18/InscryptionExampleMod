@@ -1,12 +1,13 @@
-using BepInEx.Logging;
-using System;
-using System.Reflection;
 using HarmonyLib;
 using BepInEx;
 using BepInEx.Bootstrap;
+using BepInEx.Logging;
+using System;
+using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using DiskCardGame;
 using UnityEngine;
 using InscryptionAPI;
@@ -17,7 +18,7 @@ using InscryptionAPI.Helpers;
 using InscryptionAPI.Encounters;
 using InscryptionAPI.Regions;
 using InscryptionAPI.Boons;
-using System.Linq;
+using InscryptionCommunityPatch.Card;
 
 namespace ExampleMod
 {
@@ -73,6 +74,9 @@ namespace ExampleMod
 
             // Add abilities before cards. Otherwise, the game will try to load cards before the abilities are created.
 
+            // Add custom cost.
+            AddCustomCosts();
+
             // The example ability method.
             AddNewTestAbility();
 
@@ -109,9 +113,6 @@ namespace ExampleMod
 
             // Pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
-
-            // Set a custom tribe. This does not add a totem head.
-            Debug.Log(TextureHelper.GetImageAsTexture("tribeicon_example.png"));
 
         }
 
@@ -253,7 +254,7 @@ namespace ExampleMod
         {
             BoonManager.FullBoon ExampleBoon = new BoonManager.FullBoon();
 
-            public override bool RespondToSacrifice()
+            public override bool RespondsToSacrifice()
             {
                 return true;
             }
@@ -268,20 +269,19 @@ namespace ExampleMod
         // Here is where an example boon is added.
         private static void AddExampleBoon()
         {
-            // Build the boon as BoonData.
-            BoonData.Type example_boon = BoonManager.New<ExampleBoonBehaviour>(
-                Plugin.PluginGuid, 
-                "Example Boon",
-                "This example boon gives one tooth whenever a card is sacrificed.",
-                TextureHelper.GetImageAsTexture("boonicon_example.png"),
-                TextureHelper.GetImageAsTexture("boon_example.png"),
-                true,
-                true,
-                true
-            );
+            // Build the boon as FullBoon.
+            BoonManager.FullBoon example_boon = new BoonManager.FullBoon();
 
             // Pass the BoonData to the API.
-            BoonManager.AddBoon(example_boon);
+            BoonManager.New<ExampleBoonBehaviour>(
+                    Plugin.PluginGuid,
+                    "Example Boon",
+                    "This example boon gives one tooth whenever a card is sacrificed.",
+                    TextureHelper.GetImageAsTexture("boonicon_example.png"),
+                    TextureHelper.GetImageAsTexture("boon_example.png"),
+                    true,
+                    true
+                );
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -496,6 +496,30 @@ namespace ExampleMod
             NewTestAbility.ability = newtestability.ability;
         }
 
+
+        // Add a custom card cost. This is done by adding to the list of costs in Part1CardCostRender.
+        private void AddCustomCosts()
+        {
+            Part1CardCostRender.UpdateCardCost += delegate (CardInfo card, List<Texture2D> costs)
+                {
+
+                    // The extended property here simplifies a card-specific cost. 
+                    // You can also use card.GetExtendedPropertyAsInt("example_cost") elsewhere.
+                    int? example_cost = card.GetExtendedPropertyAsInt("example_cost");
+
+                    Debug.Log("CHECK COSTS");
+                    Debug.Log(card.GetExtendedPropertyAsInt("example_cost"));
+
+                    if (example_cost > 0)
+                    {
+                        // Add this cost to the card's costs as a texture.
+                        // This uses string interpolation (denoted by $) to convey to the texturehelper which number to append to the icon's name.
+                        costs.Add(TextureHelper.GetImageAsTexture($"cost_{example_cost}example.png"));
+                    }
+
+                };
+        }
+
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -526,7 +550,7 @@ namespace ExampleMod
             )
 
             // This is the cost of the card. You can use bloodCost, bonesCost, and energyCost.
-            .SetCost(bloodCost: 3)
+            .SetCost(bloodCost: 0)
 
             // These are the abilities this card will have.
             // The format for custom abilities is 'CustomAbilityClass.ability'.
@@ -557,6 +581,10 @@ namespace ExampleMod
             // The first tribe is a custom tribe, we set this earlier and now we pass it to the card.
             // The second tribe example here is vanilla, in the format of Tribe.tribename.
             .AddTribes(new Tribe[] { exampleTribe, Tribe.Canine })
+
+            // Set an extended property here.
+            // An extended property can be arbitrary, but in this case we're setting the name of the property to "example_cost" and setting it as an int.
+            .SetExtendedProperty("example_cost", 2)
 
             ;
 
