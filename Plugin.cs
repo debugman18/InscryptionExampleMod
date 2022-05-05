@@ -61,6 +61,9 @@ namespace ExampleMod
         {
             Logger.LogInfo($"Loaded {PluginName}!");
 
+            // Apply our harmony patches.
+            harmony.PatchAll(typeof(Plugin));
+
             // Here we add the sprites to the list we created earlier.
             art_sprites = new List<Sprite>();
 
@@ -472,6 +475,39 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        public class ExampleCardCostAbility : SpecialCardBehaviour
+        {
+            public SpecialTriggeredAbility SpecialAbility => specialAbility;
+
+            public static SpecialTriggeredAbility specialAbility;
+
+            public readonly static SpecialTriggeredAbility TestSpecialAbility = SpecialTriggeredAbilityManager.Add(PluginGuid, "Example Card Cost Ability", typeof(ExampleCardCostAbility)).Id;
+
+            public override bool RespondsToDrawn()
+            {
+                return true;
+            }
+
+            public override IEnumerator OnDrawn()
+            {
+
+                if (RunState.Run.consumables.Count > base.Card.Info.GetExtendedPropertyAsInt("example_cost"))
+                {
+                    base.PlayableCard.CanPlay();
+                }
+
+                else
+                {
+                    base.PlayableCard.CanPlay();
+                }
+
+                yield break;
+            }
+
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
 
         // This method passes the ability and the ability information to the API.
         private void AddNewTestAbility()
@@ -496,6 +532,7 @@ namespace ExampleMod
             NewTestAbility.ability = newtestability.ability;
         }
 
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
 
         // Add a custom card cost. This is done by adding to the list of costs in Part1CardCostRender.
         private void AddCustomCosts()
@@ -515,6 +552,75 @@ namespace ExampleMod
                     }
 
                 };
+        }
+
+        // This is the actual logic for the custom cost.
+        // Here you should perform whatever checks you need to do meet your cost requirements.
+        public static bool CheckCustomCost(PlayableCard card)
+        {
+            if (RunState.Run.playerLives >= card.Info.GetExtendedPropertyAsInt("example_cost"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        // This logic determines if the cost is met.
+        [HarmonyPatch(typeof(PlayableCard), "CanPlay")]
+        [HarmonyPostfix]
+        public static void IsCustomCostMet(ref bool __result, ref PlayableCard __instance)
+        {
+
+            // Only run this particular logic when applicable.
+            if (__instance.Info.GetExtendedPropertyAsInt("example_cost") > 0)
+            {
+                bool example_cost_met = CheckCustomCost(__instance);
+
+                if (__result == true && example_cost_met == true)
+                {
+                    __result = true;
+                }
+
+                else
+                {
+                    __result = false;
+                }
+            }
+
+        }
+
+        // This logic actually applies the cost.
+        // This is a very simple example.
+        [HarmonyPatch(typeof(PlayerHand), "SelectSlotForCard")]
+        [HarmonyPostfix]
+        public static IEnumerator PayCustomCost(IEnumerator enumerator, PlayerHand __instance, PlayableCard card)
+        {
+            Debug.Log(card.Info.GetExtendedPropertyAsInt("example_cost"));
+            if (card.Info.GetExtendedPropertyAsInt("example_cost") > 0)
+            {
+                // Remove 1 player life.
+                RunState.Run.playerLives--;
+                Singleton<CandleHolder>.Instance.BlowOutCandle(1);
+            }
+
+            return enumerator;
+        }
+
+        // This patches the dialogue that occurs when a cost is not affordable.
+        [HarmonyPatch(typeof(HintsHandler), "OnNonplayableCardClicked")]
+        [HarmonyPostfix]
+        public static void ExampleCostCannotAffordHint(ref PlayableCard card)
+        {
+            if (card.Info.GetExtendedPropertyAsInt("example_cost") > 0 && !CheckCustomCost(card))
+            {
+                Singleton<TextDisplayer>.Instance.ShowMessage("You only have one candle left...");
+            }
+
+            else
+            {
+                return;
+            }
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -581,7 +687,11 @@ namespace ExampleMod
 
             // Set an extended property here.
             // An extended property can be arbitrary, but in this case we're setting the name of the property to "example_cost" and setting it as an int.
+            // This is mainly used for purposes of rendering the custom cost, but this int can also be compared to in the custom cost logic.
             .SetExtendedProperty("example_cost", 2)
+
+            // This is the bool we will use to tell the game whether or not the custom cost has been met.
+            .SetExtendedProperty("example_cost_met", false)
 
             ;
 
