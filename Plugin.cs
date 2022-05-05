@@ -656,8 +656,6 @@ namespace ExampleMod
             // This is mainly used for purposes of rendering the custom cost, but this int can also be compared to in the custom cost logic.
             .SetExtendedProperty("example_cost", 2)
 
-            // This is the bool we will use to tell the game whether or not the custom cost has been met.
-            .SetExtendedProperty("example_cost_met", false)
 
             ;
 
