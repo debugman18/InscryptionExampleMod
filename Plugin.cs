@@ -475,40 +475,6 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
-        public class ExampleCardCostAbility : SpecialCardBehaviour
-        {
-            public SpecialTriggeredAbility SpecialAbility => specialAbility;
-
-            public static SpecialTriggeredAbility specialAbility;
-
-            public readonly static SpecialTriggeredAbility TestSpecialAbility = SpecialTriggeredAbilityManager.Add(PluginGuid, "Example Card Cost Ability", typeof(ExampleCardCostAbility)).Id;
-
-            public override bool RespondsToDrawn()
-            {
-                return true;
-            }
-
-            public override IEnumerator OnDrawn()
-            {
-
-                if (RunState.Run.consumables.Count > base.Card.Info.GetExtendedPropertyAsInt("example_cost"))
-                {
-                    base.PlayableCard.CanPlay();
-                }
-
-                else
-                {
-                    base.PlayableCard.CanPlay();
-                }
-
-                yield break;
-            }
-
-        }
-
-        // --------------------------------------------------------------------------------------------------------------------------------------------------
-
-
         // This method passes the ability and the ability information to the API.
         private void AddNewTestAbility()
         {
