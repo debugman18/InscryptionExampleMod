@@ -14,29 +14,23 @@ using InscryptionAPI.Card;
 using InscryptionAPI.Ascension;
 using InscryptionAPI.Helpers;
 using InscryptionAPI.Encounters;
+using InscryptionAPI.Nodes;
 
 using System.Linq;
 
 namespace ExampleMod;
 
-// This CustomNodeData is passed to NodeManager.Add(). It decides what special circumstances should be applied to the spawning behaviour of the node.
-public class ExampleNodeData : CustomNodeData
-{
-	public override void Initialize()
-	{
-		this.AddGenerationPrerequisite(() => AscensionSaveData.Data.activeChallenges.Count() >= 1);
-	}
-}
-
-// ICustomNodeSequence is an interface, and we can choose what class to inherit from here.
-// We use CardStatBoostSequencer because it's a simpler sequence.
-// MonoBehvaiour must be in the inheritance tree, and we may inherit from it instead.
-
 // This example sequence simply lowers the blood cost of a valid card in the player deck by 1.
-public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
-
+public class ExampleSequencer : CustomNodeSequencer, ICustomNodeSequencer
 {
-	public IEnumerator ExecuteCustomSequence(CustomNodeData ExampleNodeData)
+	public SelectCardFromDeckSlot selectionSlot = SpecialNodeHandler.Instance.cardStatBoostSequencer.selectionSlot;
+
+    public override bool ShouldNotReturnToMapOnEnd(CustomSpecialNodeData exampleNode)
+    {
+        return true;
+    }
+
+    public override IEnumerator DoCustomSequence(CustomSpecialNodeData exampleNode)
 	{
 		Singleton<ViewManager>.Instance.SwitchToView(View.Default, false, true);
 		yield return new WaitForSeconds(0.5f);
@@ -50,7 +44,6 @@ public class ExampleSequence : CardStatBoostSequencer, ICustomNodeSequence
 		InteractionCursor.Instance.SetEnabled(true);
 
 		// We make a reference to the cardStatBoostSequencer.selectionSlot.
-		selectionSlot = SpecialNodeHandler.Instance.cardStatBoostSequencer.selectionSlot;
 		selectionSlot.ClearDelegates();
 
 		// This removes the fire animations from the slot.

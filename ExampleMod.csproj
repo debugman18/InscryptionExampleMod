@@ -4,13 +4,14 @@
     <TargetFramework>netstandard2.0</TargetFramework>
     <AssemblyName>ExampleMod</AssemblyName>
     <Description>An example mod for the Inscryption API</Description>
-    <Version>2.2.0</Version>
+    <Version>2.4.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>Latest</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="API_dev-API" Version="2.2.0" />
+    <PackageReference Include="API_dev-API" Version="2.4.0" />
+    <PackageReference Include="BepInEx-MonoMod_Loader_Inscryption" Version="1.0.0" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
     <PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />

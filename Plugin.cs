@@ -18,7 +18,9 @@ using InscryptionAPI.Helpers;
 using InscryptionAPI.Encounters;
 using InscryptionAPI.Regions;
 using InscryptionAPI.Boons;
+using InscryptionAPI.Nodes;
 using InscryptionCommunityPatch.Card;
+using InscryptionAPI.Triggers;
 
 namespace ExampleMod
 {
@@ -34,7 +36,7 @@ namespace ExampleMod
         // These are variables that exist everywhere in the entire class.
         private const string PluginGuid = "debugman18.inscryption.examplemod";
         private const string PluginName = "ExampleMod";
-        private const string PluginVersion = "2.0";
+        private const string PluginVersion = "2.4.0";
         private const string PluginPrefix = "Example";
 
         // For some things, like challenge icons, we need to add the art now instead of later.
@@ -50,6 +52,8 @@ namespace ExampleMod
 
         // We use this to reference our example tribe.
         public static Tribe exampleTribe;
+
+        public static NewNodeManager.FullNode exampleNode;
 
         // We will use this as a random seed.
         public static int randomSeed;
@@ -95,7 +99,7 @@ namespace ExampleMod
             // The example challenge method. The method creates the challengeinfo, the second line here passes the info to the API.
             // The third and fourth parameters here are Unlock Level and Stackable. 
             AddExampleChallenge();
-            exampleChallenge = ChallengeManager.Add(PluginGuid, exampleChallenge_info, 0, false);
+            exampleChallenge = ChallengeManager.AddSpecific(PluginGuid, exampleChallenge_info, 0);
 
             // Adding a starter deck is fairly simple.
             // First we create the starterdeck info.
@@ -148,7 +152,7 @@ namespace ExampleMod
                 .SetDefaultPart1Ability();
             exampleStatIconInfo.appliesToAttack = true;
             exampleStatIconInfo.appliesToHealth = false;
-           
+
             ExampleStatIconID = StatIconManager.Add(PluginGuid, exampleStatIconInfo, typeof(ExampleStatBehaviour)).Id;
         }
 
@@ -157,23 +161,32 @@ namespace ExampleMod
         // Here is where we can add our nodes.
         private static void AddNodes()
         {
-            // Here we add our ExampleSequence, with CustomNodeData ExampleNodeData.
-            NodeManager.Add<ExampleSequence, ExampleNodeData>(
-            // These textures are our node icon.
-            // A tip for this art:
-            // Over the four frames, mildly adjust the shape of the background object,
-            // while seperately mildly adjusting the shape of the foreground object.
-            // The desired animation is a mild shifting.
-            new Texture2D[] {
-                TextureHelper.GetImageAsTexture("example_node_1.png"),
-                TextureHelper.GetImageAsTexture("example_node_2.png"),
-                TextureHelper.GetImageAsTexture("example_node_3.png"),
-                TextureHelper.GetImageAsTexture("example_node_4.png")
-            },
+            // Here we add our ExampleSequencer.
+            exampleNode = NewNodeManager.New(
 
-            // SpecialEventRandom will spawn in areas where nodes like Totem nodes would.
-            NodeManager.NodePosition.SpecialEventRandom
+                guid: PluginGuid,
+                name: "ExampleNode",
+
+                // SpecialEvent will spawn in areas where nodes like Totem nodes would.
+                generationType: GenerationType.SpecialEvent,
+
+                nodeSequencerType: typeof(ExampleSequencer),
+
+                // These textures are our node icon.
+                // A tip for this art:
+                // Over the four frames, mildly adjust the shape of the background object,
+                // while seperately mildly adjusting the shape of the foreground object.
+                // The desired animation is a mild shifting.
+                nodeAnimation: new List<Texture2D>
+                {
+                    TextureHelper.GetImageAsTexture("example_node_1.png"),
+                    TextureHelper.GetImageAsTexture("example_node_2.png"),
+                    TextureHelper.GetImageAsTexture("example_node_3.png"),
+                    TextureHelper.GetImageAsTexture("example_node_4.png")
+                }
+
             );
+
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -277,7 +290,7 @@ namespace ExampleMod
 
             // Pass the BoonData to the API.
             BoonManager.New<ExampleBoonBehaviour>(
-                    Plugin.PluginGuid,
+                    PluginGuid,
                     "Example Boon",
                     "This example boon gives one tooth whenever a card is sacrificed.",
                     TextureHelper.GetImageAsTexture("boonicon_example.png"),
@@ -289,7 +302,7 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
-
+        // This is an example tribe. Currently it does not add a totem head.
         private static void AddExampleTribe()
         {
             exampleTribe = TribeManager.Add(
@@ -343,6 +356,8 @@ namespace ExampleMod
 
         [HarmonyPatch(typeof(Card), "ApplyAppearanceBehaviours")]
         [HarmonyPostfix]
+
+        // Harmony patches need to be static.
         public static void ApplyChallenge(ref Card __instance)
         {
             if (AscensionSaveData.Data.ChallengeIsActive(exampleChallenge.challengeType))
@@ -359,7 +374,6 @@ namespace ExampleMod
 
 
         // This is a method that adds a new challenge for Kaycee's Mod.
-
         private void AddExampleChallenge()
         {
             exampleChallenge_info = ScriptableObject.CreateInstance<AscensionChallengeInfo>();
@@ -432,11 +446,54 @@ namespace ExampleMod
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
 
+        // This is an example of using the extended ability triggers added by the API.
+        // In this ability we're going to attack ALL bird cards on the board.
+        // This ability is not already added to the example bear card, but it can be added the same as a regular ability type.
+
+        // When adding interfaces, the format here is "I" plus the trigger type.
+        public class NewExtendedAbility : ExtendedAbilityBehaviour, IGetOpposingSlots
+        {
+            public override Ability Ability
+            {
+                get
+                {
+                    return ability;
+                }
+            }
+
+            public static Ability ability;
+
+            bool IGetOpposingSlots.RespondsToGetOpposingSlots()
+            {
+                return true;
+            }
+
+            // This removes the directly opposing slot from the list of slots to be attacked.
+            bool IGetOpposingSlots.RemoveDefaultAttackSlot()
+            {
+                return true;
+            }
+
+            List<CardSlot> IGetOpposingSlots.GetOpposingSlots(List<CardSlot> originalSlots, List<CardSlot> otherAddedSlots)
+            {
+                List<CardSlot> QueuedSlots = new List<CardSlot>();
+                foreach (CardSlot slot in Singleton<BoardManager>.Instance.AllSlots)
+                {
+                    if (slot.Card && slot.Card.IsOfTribe(Tribe.Bird))
+                    {
+                        QueuedSlots.Add(slot);
+                    }
+                }
+                return QueuedSlots;
+            }
+
+        }
+
+        // --------------------------------------------------------------------------------------------------------------------------------------------------
+
         // This is your special ability class. This defines what your special ability does.
         public class NewTestSpecialAbility : SpecialCardBehaviour
         {
-            public SpecialTriggeredAbility SpecialAbility => specialAbility;
-
             public static SpecialTriggeredAbility specialAbility;
 
             public readonly static SpecialTriggeredAbility TestSpecialAbility = SpecialTriggeredAbilityManager.Add(PluginGuid, "Test Special Ability", typeof(NewTestSpecialAbility)).Id;
@@ -492,8 +549,9 @@ namespace ExampleMod
 
             // This specifies the icon for the ability if it exists in Part 2.
             .SetPixelAbilityIcon(TextureHelper.GetImageAsTexture("pixel_examplesigil.png"), FilterMode.Point)
+
             ;
-            
+
             // Pass the ability to the API.
             NewTestAbility.ability = newtestability.ability;
         }
@@ -504,20 +562,20 @@ namespace ExampleMod
         private void AddCustomCosts()
         {
             Part1CardCostRender.UpdateCardCost += delegate (CardInfo card, List<Texture2D> costs)
+            {
+
+                // The extended property here simplifies a card-specific cost. 
+                // You can also use card.GetExtendedPropertyAsInt("example_cost") elsewhere.
+                int? example_cost = card.GetExtendedPropertyAsInt("example_cost");
+
+                if (example_cost > 0)
                 {
+                    // Add this cost to the card's costs as a texture.
+                    // This uses string interpolation (denoted by $) to convey to the texturehelper which number to append to the icon's name.
+                    costs.Add(TextureHelper.GetImageAsTexture($"cost_{example_cost}example.png"));
+                }
 
-                    // The extended property here simplifies a card-specific cost. 
-                    // You can also use card.GetExtendedPropertyAsInt("example_cost") elsewhere.
-                    int? example_cost = card.GetExtendedPropertyAsInt("example_cost");
-
-                    if (example_cost > 0)
-                    {
-                        // Add this cost to the card's costs as a texture.
-                        // This uses string interpolation (denoted by $) to convey to the texturehelper which number to append to the icon's name.
-                        costs.Add(TextureHelper.GetImageAsTexture($"cost_{example_cost}example.png"));
-                    }
-
-                };
+            };
         }
 
         // This is the actual logic for the custom cost.
@@ -562,7 +620,6 @@ namespace ExampleMod
         [HarmonyPostfix]
         public static IEnumerator PayCustomCost(IEnumerator enumerator, PlayerHand __instance, PlayableCard card)
         {
-            Debug.Log(card.Info.GetExtendedPropertyAsInt("example_cost"));
             if (card.Info.GetExtendedPropertyAsInt("example_cost") > 0)
             {
                 // Remove 1 player life.
@@ -581,6 +638,9 @@ namespace ExampleMod
             if (card.Info.GetExtendedPropertyAsInt("example_cost") > 0 && !CheckCustomCost(card))
             {
                 Singleton<TextDisplayer>.Instance.ShowMessage("You only have one candle left...");
+
+                new WaitForSeconds(0.4f);
+                Singleton<TextDisplayer>.Instance.Clear();
             }
 
             else
@@ -655,7 +715,6 @@ namespace ExampleMod
             // An extended property can be arbitrary, but in this case we're setting the name of the property to "example_cost" and setting it as an int.
             // This is mainly used for purposes of rendering the custom cost, but this int can also be compared to in the custom cost logic.
             .SetExtendedProperty("example_cost", 2)
-
 
             ;
 
