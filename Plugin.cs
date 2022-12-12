@@ -21,6 +21,7 @@ using InscryptionAPI.Boons;
 using InscryptionAPI.Nodes;
 using InscryptionCommunityPatch.Card;
 using InscryptionAPI.Triggers;
+using InscryptionAPI.Sound;
 
 namespace ExampleMod
 {
@@ -723,6 +724,16 @@ namespace ExampleMod
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
-
+        // Add our custom Music
+                //Int to track the amount of tracks that fully loaded
+                int MusicAmount = 0;
+                //Add a song with custom Volume
+                GramophoneManager.AddTrack(PluginGuid, "Example.mp3", 0.5f);
+                //Add a song to our int
+                MusicAmount++;
+                //Add a song without custom Volume
+                GramophoneManager.AddTrack(PluginGuid, "Example.wav");
+                //Add a song to our Int
+                MusicAmount++;
     }
 }
