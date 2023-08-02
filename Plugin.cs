@@ -1,27 +1,19 @@
-using HarmonyLib;
 using BepInEx;
-using BepInEx.Bootstrap;
-using BepInEx.Logging;
-using System;
-using System.Reflection;
+using BepInEx.Configuration;
+using DiskCardGame;
+using HarmonyLib;
+using InscryptionAPI.Ascension;
+using InscryptionAPI.Boons;
+using InscryptionAPI.Card;
+using InscryptionAPI.Helpers;
+using InscryptionAPI.Nodes;
+using InscryptionAPI.Regions;
+using InscryptionAPI.Sound;
+using InscryptionAPI.Triggers;
+using InscryptionCommunityPatch.Card;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using DiskCardGame;
 using UnityEngine;
-using InscryptionAPI;
-using InscryptionAPI.Saves;
-using InscryptionAPI.Card;
-using InscryptionAPI.Ascension;
-using InscryptionAPI.Helpers;
-using InscryptionAPI.Encounters;
-using InscryptionAPI.Regions;
-using InscryptionAPI.Boons;
-using InscryptionAPI.Nodes;
-using InscryptionCommunityPatch.Card;
-using InscryptionAPI.Triggers;
-using InscryptionAPI.Sound;
 
 namespace ExampleMod
 {
@@ -59,7 +51,8 @@ namespace ExampleMod
         // We will use this as a random seed.
         public static int randomSeed;
 
-        // --------------------------------------------------------------------------------------------------------------------------------------------------
+        // Load The Config
+        public ConfigEntry<bool> configEnableNothing;
 
         // This is where you would run all of your other methods.
         private void Awake()
@@ -88,15 +81,12 @@ namespace ExampleMod
             // The example ability method.
             AddNewTestAbility();
 
-            // In this method we're adding custom stat icons.
-            AddSpecialStatIcons();
-
             // Add custom tribe in this method.
             AddExampleTribe();
 
             // The example card method.
-            AddBears();
-
+            //   AddBears();
+            // AddSpecialStatIcons();
             // The example challenge method. The method creates the challengeinfo, the second line here passes the info to the API.
             // The third and fourth parameters here are Unlock Level and Stackable. 
             AddExampleChallenge();
@@ -122,39 +112,31 @@ namespace ExampleMod
             // Pass the starterdeck info to the API.
             StarterDeckManager.Add(PluginGuid, exampleDeck);
 
-        }
+            // Summons The Config file and or Option.
+            configEnableNothing = Config.Bind<bool>("DebugMan.ExampleMod.Configs",
+                                            "This Config Does Nothing?",
+                                            true,
+                                            "Enable NULL?");
 
-        // --------------------------------------------------------------------------------------------------------------------------------------------------
-
-        // This is our stat behaviour.
-        public class ExampleStatBehaviour : VariableStatBehaviour
-        {
-            private static SpecialStatIcon exampleStatIconType;
-
-            public override SpecialStatIcon IconType => exampleStatIconType;
-
-            // The array we're returning here is for the card health/power values. 
-            public override int[] GetStatValues()
+            // --------------------------------------------------------------------------------------------------------------------------------------------------
+            //Music Num
+            int MusicAmount = 0;
+            //Summons the music
+            if (configEnableNothing.Value) // If configs value if true:
             {
-                int num = 1;
-
-                int[] array = new int[2];
-                array[1] = num;
-                return array;
+                // Add Track for With sound volume lowered and with MP3
+                GramophoneManager.AddTrack(PluginGuid, "Example.mp3", 0.5f);
+                // Upkeep the Music Amount
+                MusicAmount++;
             }
-
-        }
-
-        // Here we add a custom specialstaticon.
-        public void AddSpecialStatIcons()
-        {
-            StatIconInfo exampleStatIconInfo = StatIconManager.New(PluginGuid, "ExampleStatIcon", "This is an example stat icon.", typeof(ExampleStatBehaviour))
-                .SetIcon("ExampleMod/art/specialstaticons/example_stat_icon.png")
-                .SetDefaultPart1Ability();
-            exampleStatIconInfo.appliesToAttack = true;
-            exampleStatIconInfo.appliesToHealth = false;
-
-            ExampleStatIconID = StatIconManager.Add(PluginGuid, exampleStatIconInfo, typeof(ExampleStatBehaviour)).Id;
+            if (configEnableNothing.Value) // If configs value if true:
+            {
+                // Add Track for With sound volume lowered and with MP3
+                GramophoneManager.AddTrack(PluginGuid, "Example.wav");
+                // Upkeep the Music Amount
+                MusicAmount++;
+            }
+            Logger.LogInfo($"Sucsessfully Loaded {MusicAmount} Song(s)");
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
@@ -651,7 +633,7 @@ namespace ExampleMod
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
-
+        /*
 
         // This method passes the card and the card information to the API.
         private void AddBears()
@@ -721,19 +703,40 @@ namespace ExampleMod
 
             // Pass the card to the API.
             CardManager.Add(PluginPrefix, EightFuckingBears);
+        
+    }
+        
+        // This is our stat behaviour.
+        public class ExampleStatBehaviour : VariableStatBehaviour
+        {
+            private static SpecialStatIcon exampleStatIconType;
+
+            public override SpecialStatIcon IconType => exampleStatIconType;
+
+            // The array we're returning here is for the card health/power values. 
+            public override int[] GetStatValues()
+            {
+                int num = 1;
+
+                int[] array = new int[2];
+                array[1] = num;
+                return array;
+            }
+
         }
 
-        // --------------------------------------------------------------------------------------------------------------------------------------------------
-        // Add our custom Music
-                //Int to track the amount of tracks that fully loaded
-                int MusicAmount = 0;
-                //Add a song with custom Volume
-                GramophoneManager.AddTrack(PluginGuid, "Example.mp3", 0.5f);
-                //Add a song to our int
-                MusicAmount++;
-                //Add a song without custom Volume
-                GramophoneManager.AddTrack(PluginGuid, "Example.wav");
-                //Add a song to our Int
-                MusicAmount++;
+        // Here we add a custom specialstaticon.
+        public void AddSpecialStatIcons()
+        {
+            StatIconInfo exampleStatIconInfo = StatIconManager.New(PluginGuid, "ExampleStatIcon", "This is an example stat icon.", typeof(ExampleStatBehaviour))
+                .SetIcon("ExampleMod/art/specialstaticons/example_stat_icon.png")
+                .SetDefaultPart1Ability();
+            exampleStatIconInfo.appliesToAttack = true;
+            exampleStatIconInfo.appliesToHealth = false;
+
+            ExampleStatIconID = StatIconManager.Add(PluginGuid, exampleStatIconInfo, typeof(ExampleStatBehaviour)).Id;
+        }
+
+        */
     }
 }
