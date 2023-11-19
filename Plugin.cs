@@ -633,7 +633,7 @@ namespace ExampleMod
         }
 
         // --------------------------------------------------------------------------------------------------------------------------------------------------
-        /*
+        
 
         // This method passes the card and the card information to the API.
         private void AddBears()
@@ -737,6 +737,6 @@ namespace ExampleMod
             ExampleStatIconID = StatIconManager.Add(PluginGuid, exampleStatIconInfo, typeof(ExampleStatBehaviour)).Id;
         }
 
-        */
+        
     }
 }
