@@ -85,8 +85,11 @@ namespace ExampleMod
             AddExampleTribe();
 
             // The example card method.
-            //   AddBears();
-            // AddSpecialStatIcons();
+            AddBears();
+
+            // This allows a Stat Icon to be added
+            AddSpecialStatIcons();
+            
             // The example challenge method. The method creates the challengeinfo, the second line here passes the info to the API.
             // The third and fourth parameters here are Unlock Level and Stackable. 
             AddExampleChallenge();
