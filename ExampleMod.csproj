@@ -10,7 +10,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="API_dev-API" Version="2.4.0" />
+    <Resource Include="art\Gramophone Tracks\Example.wav" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="art\Gramophone Tracks\Example.mp3" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BepInEx-MonoMod_Loader_Inscryption" Version="1.0.0" />
     <PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
     <PackageReference Include="BepInEx.Core" Version="5.*" />
@@ -24,6 +31,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="InscryptionAPI">
+      <HintPath>lib\InscryptionAPI.dll</HintPath>
+    </Reference>
+    <Reference Include="InscryptionCommunityPatch">
+      <HintPath>lib\InscryptionCommunityPatch.dll</HintPath>
+    </Reference>
     <Reference Include="Sirenix.Serialization">
       <HintPath>lib\Sirenix.Serialization.dll</HintPath>
     </Reference>

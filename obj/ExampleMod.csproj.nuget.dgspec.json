@@ -1,0 +1,94 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\Thinc\\Source\\Repos\\InscryptionExampleModTesting\\ExampleMod.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\Thinc\\Source\\Repos\\InscryptionExampleModTesting\\ExampleMod.csproj": {
+      "version": "2.4.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\Thinc\\Source\\Repos\\InscryptionExampleModTesting\\ExampleMod.csproj",
+        "projectName": "ExampleMod",
+        "projectPath": "C:\\Users\\Thinc\\Source\\Repos\\InscryptionExampleModTesting\\ExampleMod.csproj",
+        "packagesPath": "C:\\Users\\Thinc\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\Thinc\\Source\\Repos\\InscryptionExampleModTesting\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Thinc\\Source\\Repos\\InscryptionExampleModTesting\\NuGet.Config",
+          "C:\\Users\\Thinc\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "netstandard2.0"
+        ],
+        "sources": {
+          "C:\\Program Files\\dotnet\\library-packs": {},
+          "https://api.nuget.org/v3/index.json": {},
+          "https://nuget.bepinex.dev/v3/index.json": {},
+          "https://nuget.windows10ce.com/nuget/v3/index.json": {}
+        },
+        "frameworks": {
+          "netstandard2.0": {
+            "targetAlias": "netstandard2.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "netstandard2.0": {
+          "targetAlias": "netstandard2.0",
+          "dependencies": {
+            "BepInEx-MonoMod_Loader_Inscryption": {
+              "target": "Package",
+              "version": "[1.0.0, )"
+            },
+            "BepInEx.Analyzers": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "BepInEx.Core": {
+              "target": "Package",
+              "version": "[5.*, )"
+            },
+            "BepInEx.PluginInfoProps": {
+              "target": "Package",
+              "version": "[1.*, )"
+            },
+            "Inscryption.GameLibs": {
+              "target": "Package",
+              "version": "[1.9.0-r.0, )"
+            },
+            "NETStandard.Library": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[2.0.3, )",
+              "autoReferenced": true
+            },
+            "UnityEngine.Modules": {
+              "include": "Compile",
+              "target": "Package",
+              "version": "[2019.4.24, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.401\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

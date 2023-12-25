@@ -1,0 +1,14 @@
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\bin\Release\netstandard2.0\ExampleMod.deps.json
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\bin\Release\netstandard2.0\ExampleMod.dll
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\bin\Release\netstandard2.0\ExampleMod.pdb
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\bin\Release\netstandard2.0\InscryptionAPI.dll
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\bin\Release\netstandard2.0\InscryptionCommunityPatch.dll
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.csproj.AssemblyReference.cache
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\PluginInfo.cs
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.AssemblyInfoInputs.cache
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.AssemblyInfo.cs
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.csproj.CoreCompileInputs.cache
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.csproj.CopyComplete
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.dll
+C:\Users\Thinc\Source\Repos\InscryptionExampleModTesting\obj\Release\netstandard2.0\ExampleMod.pdb
